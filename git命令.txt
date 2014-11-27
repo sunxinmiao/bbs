@@ -8,8 +8,11 @@
 
 4、$ git add readme.txt //添加文件
 
-5、$ git commit -m "wrote a readme file"  //-m 添加注释
+5、$ git commit -m "wrote a readme file"  //-m 添加注释 
 
 6、$ git status
 
-7、git diff readme.txt //git diff顾名思义就是查看difference，显示的格式正是Unix通用的diff格式
+7、$ git diff readme.txt //git diff顾名思义就是查看difference，显示的格式正是Unix通用的diff格式
+
+8、$ git log//显示从最近到最远的提交日志
+	 $ git log --pretty=oneline
