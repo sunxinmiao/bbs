@@ -1,0 +1,11 @@
+1¡¢$ git config --global user.name "Your Name"
+	 $ git config --global user.email "email@example.com"
+
+2¡¢$ mkdir learngit
+	 $ cd learngit
+
+3¡¢$ git init
+
+4¡¢$ git add readme.txt
+
+5¡¢$ git commit -m "wrote a readme file"  //-m Ìí¼Ó×¢ÊÍ
