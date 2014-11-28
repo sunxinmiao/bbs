@@ -7,16 +7,25 @@
 3、$ git init
 
 4、$ git add readme.txt //添加文件
-
+	 $ git add . //添加目录下所有文件
 5、$ git commit -m "wrote a readme file"  //-m 添加注释 
 
 6、$ git status
 
 7、$ git diff readme.txt //git diff顾名思义就是查看difference，显示的格式正是Unix通用的diff格式
-
+	 $ git diff HEAD -- readme.txt命令可以查看工作区和版本库里面最新版本的区别
+	 
 8、$ git log//显示从最近到最远的提交日志
 	 $ git log --pretty=oneline
 	 $ git reflog//记录每一次命令
 9、$ git reset --hard HEAD//用HEAD表示当前版本，上一个版本就是HEAD^，上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100
 	 $ git reset --hard 3628164
-	
+
+10、$ ssh-keygen -t rsa -C "youremail@example.com"  生成本地ssh文件
+
+11、$ git remote add origin git@github.com:git同户名/远程库名.git 本地git关联远程目录
+
+12、$ git push -u origin master //本地内容推送到远程库，首次提交使用命令
+		$ git push origin master
+
+13、$ git clone git@github.com:git用户名/远程库名.git //从远程获取文件
