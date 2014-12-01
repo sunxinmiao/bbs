@@ -8,27 +8,27 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
 	default-lazy-init="true">
 
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations">
-			<list>
-				<value>/WEB-INF/config/jdbc.properties</value>
-			</list>
-		</property>
-	</bean>
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="driverClass" value="${jdbc.driverClassName}" />
-		<property name="jdbcUrl" value="${jdbc.url}" />
-		<property name="user" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://192.168.98.91:3306/jeebbs?characterEncoding=UTF-8" />
 		<property name="autoCommitOnClose" value="true"/>
-		<property name="checkoutTimeout" value="${cpool.checkoutTimeout}"/>
-		<property name="initialPoolSize" value="${cpool.minPoolSize}"/>
-		<property name="minPoolSize" value="${cpool.minPoolSize}"/>
-		<property name="maxPoolSize" value="${cpool.maxPoolSize}"/>
-		<property name="maxIdleTime" value="${cpool.maxIdleTime}"/>
-		<property name="acquireIncrement" value="${cpool.acquireIncrement}"/>
-		<property name="maxIdleTimeExcessConnections" value="${cpool.maxIdleTimeExcessConnections}"/>
+		<property name="checkoutTimeout" value="5000"/>
+		<property name="initialPoolSize" value="20"/>
+		<property name="minPoolSize" value="20"/>
+		<property name="maxPoolSize" value="50"/>
+		<property name="maxIdleTime" value="7200"/>
+		<property name="acquireIncrement" value="10"/>
+		<property name="maxIdleTimeExcessConnections" value="1800"/>
+		<property name="properties" ref="dataSourceProperties"/>
 	</bean>
+	<bean id="dataSourceProperties" class="com.jeecms.common.PropertiesEncryptFactoryBean">  
+        <property name="properties">  
+            <props>  
+                <prop key="user">rXaNaCNaaFwFYawwdsaswFFNssaoqdwYsan4e+kqJ4Xco=G|T</prop>  
+                <prop key="password">rXaNaCNaaFwFsdoCwYYowswCFYCaaqwwosBioVbIufFWWcOSuqx9pigw==G|T</prop>  
+            </props>  
+        </property>  
+    </bean>  
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"/>	
 		<property name="mappingLocations">
