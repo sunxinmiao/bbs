@@ -35,6 +35,7 @@ import com.jeecms.common.security.BadCredentialsException;
 import com.jeecms.common.security.DisabledException;
 import com.jeecms.common.security.UsernameNotFoundException;
 import com.jeecms.common.util.DateUtils;
+import com.jeecms.common.util.EncryptUtil;
 import com.jeecms.common.web.CookieUtils;
 import com.jeecms.common.web.RequestUtils;
 import com.jeecms.common.web.session.SessionProvider;
@@ -69,7 +70,8 @@ public class CasLoginAct {
 			Cookie c_password = CookieUtils.getCookie(request, "bbs_password");
 			String username = c_username.getValue();
 			String password = c_password.getValue();
-			Authentication auth = authMng.login(username, password, ip,
+			
+			Authentication auth = authMng.login(username, EncryptUtil.DESDencrypted(password,EncryptUtil.isEncryptKey), ip,
 					request, response, session);
 			// 是否需要在这里加上登录次数的更新？按正常的方式，应该在process里面处理的，不过这里处理也没大问题。
 			bbsUserMng.updateLoginInfo(auth.getUid(), ip);
@@ -203,7 +205,7 @@ public class CasLoginAct {
 					CookieUtils.addCookie(request, response, "bbs_username",
 							username, maxDate);
 					CookieUtils.addCookie(request, response, "bbs_password",
-							password, maxDate);
+							EncryptUtil.DESEncrypt(password,EncryptUtil.isEncryptKey), maxDate);
 
 					if (logger.isDebugEnabled()) {
 						logger.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
@@ -318,7 +320,7 @@ public class CasLoginAct {
 			return errors;
 		}
 
-		if (errors.ifOutOfLength(username, "username", 1, 100)) {
+		if (errors.ifOutOfLength(username, "username", 1, 32)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
 			}

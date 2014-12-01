@@ -1,4 +1,4 @@
-﻿<div class="dlkbg">
+<div class="dlkbg">
 
 <div class="t3 cc">
   <div class="cc" id="nav-user"> 
@@ -17,16 +17,16 @@
       <table cellspacing="0" cellpadding="0" border="0">
         <tbody>
           <tr>
-            <td><input class="uname" value="${cookie_username!}" title="请输入用户名" maxlength="16" name="username" type="text" /></td>
+            <td><input class="uname" value="${cookie_username!}" title="请输入用户名" maxlength="32" name="username" type="text" /></td>
             <td><input class="pwd" value="${cookie_password!}" title="请输入密码" type="password" maxlength="18" name="password" /></td>
             <td><input class="yan" id="captcha" title="请输入验证码" maxlength="10" size="12" name="captcha" type="text" /></td>
             <td><img src="${base}/captcha.svl" width="70" height="28" style="cursor:pointer;" onclick="this.src='${base}/captcha.svl?d='+new Date()"/></td>
             <td><select name="cookieType">
-                <option value="4" selected="selected">不保存</option>
+                <option value="4">不保存</option>
                 <option value="3">保存1天</option>
-                <option value="2">一个月</option>
-                <option value="1">1年</option>
-                <option value="0">永久</option>
+                <option value="2"  selected="selected">保存一个月</option>
+                <option value="1">保存1年</option>
+                <option value="0">永久保存</option>
               </select>
             </td>
             <td>

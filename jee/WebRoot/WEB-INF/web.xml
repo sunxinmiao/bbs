@@ -6,6 +6,7 @@
 		<param-value>
 			/WEB-INF/config/application-context.xml
 			/WEB-INF/config/cache-context.xml
+			<!-- 验证码 -->
 			/WEB-INF/config/captcha-context.xml
 			/WEB-INF/config/jeecore-context.xml
 			/WEB-INF/config/jeebbs-context.xml

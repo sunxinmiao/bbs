@@ -890,9 +890,13 @@ public class EncryptUtil {
 
 	
 	public static void main(String[] strs){
-		regXMLFile("G:/ftpConfig.xml");
-		String[] sts = {"test","zzzz"};
+//		regXMLFile("G:/ftpConfig.xml");
+//		String[] sts = {"test","zzzz"};
 //		regPropertyFile("F:/MyEclipse/workspace/AMS2/src/job.properties",sts);
+		String str = DESEncrypt("19860911",EncryptUtil.isEncryptKey);;
+		System.out.println(str);
+		
+		System.out.println(DESDencrypted(str,EncryptUtil.isEncryptKey));
 	}
 
 
