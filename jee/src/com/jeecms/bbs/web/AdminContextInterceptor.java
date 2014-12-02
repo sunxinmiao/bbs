@@ -54,27 +54,6 @@ public class AdminContextInterceptor extends HandlerInterceptorAdapter {
 		CmsUtils.setSite(request, site);
 		// Site加入线程变量
 		CmsThreadVariable.setSite(site);
-		// 获得用户
-		BbsUser user = null;
-		if (adminId != null) {
-			// 指定管理员（开发状态）
-			user = bbsUserMng.findById(adminId);
-			if (user == null) {
-				throw new IllegalStateException("User ID=" + adminId
-						+ " not found!");
-			}
-		} else {
-			// 正常状态
-			Integer userId = authMng
-					.retrieveUserIdFromSession(session, request);
-			if (userId != null) {
-				user = bbsUserMng.findById(userId);
-			}
-		}
-		// 此时用户可以为null
-		CmsUtils.setUser(request, user);
-		// User加入线程变量
-		CmsThreadVariable.setUser(user);
 
 		String uri = getURI(request);
 		// 不在验证的范围内
@@ -85,7 +64,7 @@ public class AdminContextInterceptor extends HandlerInterceptorAdapter {
 			return true;
 		}
 		// 用户为null跳转到登陆页面
-		if (user == null) {
+		if (null == request.getSession().getAttribute("isAdmin")) {
 			response.sendRedirect(getLoginUrl(request));
 
 			if (logger.isDebugEnabled()) {
@@ -94,7 +73,7 @@ public class AdminContextInterceptor extends HandlerInterceptorAdapter {
 			return false;
 		}
 		// 用户不是管理员，提示无权限。
-		if (!user.getAdmin()) {
+		if (!Boolean.parseBoolean((String)request.getSession().getAttribute("isAdmin"))) {
 			request.setAttribute(MESSAGE, MessageResolver.getMessage(request,
 					"login.notAdmin"));
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -111,6 +90,76 @@ public class AdminContextInterceptor extends HandlerInterceptorAdapter {
 		return true;
 	}
 
+	
+//	@Override
+//	public boolean preHandle(HttpServletRequest request,
+//			HttpServletResponse response, Object handler) throws Exception {
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("preHandle(HttpServletRequest, HttpServletResponse, Object) - start"); //$NON-NLS-1$
+//		}
+//
+//		// 获得站点
+//		CmsSite site = getSite(request, response);
+//		site.getConfig();
+//		CmsUtils.setSite(request, site);
+//		// Site加入线程变量
+//		CmsThreadVariable.setSite(site);
+//		// 获得用户
+//		BbsUser user = null;
+//		if (adminId != null) {
+//			// 指定管理员（开发状态）
+//			user = bbsUserMng.findById(adminId);
+//			if (user == null) {
+//				throw new IllegalStateException("User ID=" + adminId
+//						+ " not found!");
+//			}
+//		} else {
+//			// 正常状态
+//			Integer userId = authMng
+//					.retrieveUserIdFromSession(session, request);
+//			if (userId != null) {
+//				user = bbsUserMng.findById(userId);
+//			}
+//		}
+//		// 此时用户可以为null
+//		CmsUtils.setUser(request, user);
+//		// User加入线程变量
+//		CmsThreadVariable.setUser(user);
+//
+//		String uri = getURI(request);
+//		// 不在验证的范围内
+//		if (exclude(uri)) {
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("preHandle(HttpServletRequest, HttpServletResponse, Object) - end"); //$NON-NLS-1$
+//			}
+//			return true;
+//		}
+//		// 用户为null跳转到登陆页面
+//		if (user == null) {
+//			response.sendRedirect(getLoginUrl(request));
+//
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("preHandle(HttpServletRequest, HttpServletResponse, Object) - end"); //$NON-NLS-1$
+//			}
+//			return false;
+//		}
+//		// 用户不是管理员，提示无权限。
+//		if (!user.getAdmin()) {
+//			request.setAttribute(MESSAGE, MessageResolver.getMessage(request,
+//					"login.notAdmin"));
+//			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+//
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("preHandle(HttpServletRequest, HttpServletResponse, Object) - end"); //$NON-NLS-1$
+//			}
+//			return false;
+//		}
+//
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("preHandle(HttpServletRequest, HttpServletResponse, Object) - end"); //$NON-NLS-1$
+//		}
+//		return true;
+//	}
 	@Override
 	public void postHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler, ModelAndView mav)

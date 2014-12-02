@@ -1,36 +1,25 @@
 package com.jeecms.bbs.action.login;
 
-import org.apache.log4j.Logger;
-
 import static com.jeecms.core.action.front.LoginAct.MESSAGE;
 import static com.jeecms.core.action.front.LoginAct.PROCESS_URL;
 import static com.jeecms.core.action.front.LoginAct.RETURN_URL;
 import static com.jeecms.core.manager.AuthenticationMng.AUTH_KEY;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.jeecms.bbs.entity.BbsUser;
-import com.jeecms.bbs.entity.BbsUserOnline;
+import com.jeecms.bbs.config.SpecialAccountConfig;
 import com.jeecms.bbs.manager.BbsUserMng;
 import com.jeecms.bbs.manager.BbsUserOnlineMng;
-import com.jeecms.bbs.web.CmsUtils;
-import com.jeecms.common.security.BadCredentialsException;
-import com.jeecms.common.security.DisabledException;
-import com.jeecms.common.security.UsernameNotFoundException;
-import com.jeecms.common.util.DateUtils;
+import com.jeecms.common.util.EncryptUtil;
 import com.jeecms.common.web.RequestUtils;
 import com.jeecms.common.web.session.SessionProvider;
 import com.jeecms.core.entity.Authentication;
@@ -91,6 +80,7 @@ public class CmsLoginAct {
 		}
 		return "login";
 	}
+	
 	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
 	public String submit(String username, String password, String captcha,
 			String processUrl, String returnUrl, String message,
@@ -103,34 +93,12 @@ public class CmsLoginAct {
 		WebErrors errors = validateSubmit(username, password, captcha, request,
 				response);
 		if (!errors.hasErrors()) {
-			try {
-				String ip = RequestUtils.getIpAddr(request);
-				Authentication auth = authMng.login(username, password, ip,
-						request, response, session);
-				// 是否需要在这里加上登录次数的更新？按正常的方式，应该在process里面处理的，不过这里处理也没大问题。
-				bbsUserMng.updateLoginInfo(auth.getUid(), ip);
-				BbsUser user = bbsUserMng.findById(auth.getUid());
-				if (user.getDisabled() != null && user.getDisabled()) {
-					// 如果已经禁用，则推出登录。
-					authMng.deleteById(auth.getId());
-					session.logout(request, response);
-					throw new DisabledException("user disabled");
-				}
-				BbsUserOnline online = user.getUserOnline();
-				Calendar calendar = Calendar.getInstance();
-				if (online != null) {
-					// 更新在线信息(这里对最后一次登陆时长做初始化，其余初始化用定时任务)
-					online.setOnlineLatest(0d);
-					userOnlineMng.update(online);
-				} else {
-					// 首次登陆
-					online = new BbsUserOnline();
-					online.setUser(user);
-					online.initial();
-					userOnlineMng.save(online);
-				}
-				session.setAttribute(request, response, LAST_KEEP_SESSION_TIME, calendar.getTime());
-				String view = getView(processUrl, returnUrl, auth.getId());
+			
+			String pass = SpecialAccountConfig.getPassword(EncryptUtil.toMD5(username));
+			
+			if(pass.equals(EncryptUtil.toMD5(password))) {
+				request.getSession().setAttribute("isAdmin", "true");
+				String view = getView(processUrl, returnUrl, "");
 				if (view != null) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
@@ -142,19 +110,10 @@ public class CmsLoginAct {
 					}
 					return "redirect:login.jspx";
 				}
-			} catch (UsernameNotFoundException e) {
-				logger.error("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
-
-				errors.addErrorString(e.getMessage());
-			} catch (BadCredentialsException e) {
-				logger.error("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
-
-				errors.addErrorString(e.getMessage());
-			} catch (DisabledException e) {
-				logger.error("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
-
-				errors.addErrorString(e.getMessage());
+			}else {
+				errors.getErrors().add("用户名或密码错误");
 			}
+			
 		}
 		// 登录失败
 		errors.toModel(model);
@@ -173,7 +132,90 @@ public class CmsLoginAct {
 		}
 		return "login";
 	}
-
+	
+//	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
+//	public String submit(String username, String password, String captcha,
+//			String processUrl, String returnUrl, String message,
+//			HttpServletRequest request, HttpServletResponse response,
+//			ModelMap model) {
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
+//		}
+//
+//		WebErrors errors = validateSubmit(username, password, captcha, request,
+//				response);
+//		if (!errors.hasErrors()) {
+//			try {
+//				String ip = RequestUtils.getIpAddr(request);
+//				Authentication auth = authMng.login(username, password, ip,
+//						request, response, session);
+//				// 是否需要在这里加上登录次数的更新？按正常的方式，应该在process里面处理的，不过这里处理也没大问题。
+//				bbsUserMng.updateLoginInfo(auth.getUid(), ip);
+//				BbsUser user = bbsUserMng.findById(auth.getUid());
+//				if (user.getDisabled() != null && user.getDisabled()) {
+//					// 如果已经禁用，则推出登录。
+//					authMng.deleteById(auth.getId());
+//					session.logout(request, response);
+//					throw new DisabledException("user disabled");
+//				}
+//				BbsUserOnline online = user.getUserOnline();
+//				Calendar calendar = Calendar.getInstance();
+//				if (online != null) {
+//					// 更新在线信息(这里对最后一次登陆时长做初始化，其余初始化用定时任务)
+//					online.setOnlineLatest(0d);
+//					userOnlineMng.update(online);
+//				} else {
+//					// 首次登陆
+//					online = new BbsUserOnline();
+//					online.setUser(user);
+//					online.initial();
+//					userOnlineMng.save(online);
+//				}
+//				session.setAttribute(request, response, LAST_KEEP_SESSION_TIME, calendar.getTime());
+//				String view = getView(processUrl, returnUrl, auth.getId());
+//				if (view != null) {
+//					if (logger.isDebugEnabled()) {
+//						logger.debug("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+//					}
+//					return view;
+//				} else {
+//					if (logger.isDebugEnabled()) {
+//						logger.debug("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+//					}
+//					return "redirect:login.jspx";
+//				}
+//			} catch (UsernameNotFoundException e) {
+//				logger.error("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+//
+//				errors.addErrorString(e.getMessage());
+//			} catch (BadCredentialsException e) {
+//				logger.error("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+//
+//				errors.addErrorString(e.getMessage());
+//			} catch (DisabledException e) {
+//				logger.error("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+//
+//				errors.addErrorString(e.getMessage());
+//			}
+//		}
+//		// 登录失败
+//		errors.toModel(model);
+//		if (!StringUtils.isBlank(processUrl)) {
+//			model.addAttribute(PROCESS_URL, processUrl);
+//		}
+//		if (!StringUtils.isBlank(returnUrl)) {
+//			model.addAttribute(RETURN_URL, returnUrl);
+//		}
+//		if (!StringUtils.isBlank(message)) {
+//			model.addAttribute(MESSAGE, message);
+//		}
+//
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("submit(String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+//		}
+//		return "login";
+//	}
+	
 	@RequestMapping(value = "/logout.do")
 	public String logout(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -181,22 +223,23 @@ public class CmsLoginAct {
 			logger.debug("logout(HttpServletRequest, HttpServletResponse) - start"); //$NON-NLS-1$
 		}
 
-		String authId = (String) session.getAttribute(request, AUTH_KEY);
-		BbsUser user = CmsUtils.getUser(request);
-		Calendar calendar = Calendar.getInstance();
-		BbsUserOnline online = user.getUserOnline();
-		Date lastKeepSessionTime = (Date) session.getAttribute(request,
-				LAST_KEEP_SESSION_TIME);
-		online.updateOnline(DateUtils.diffTwoDate(lastKeepSessionTime, calendar
-				.getTime()));
-		userOnlineMng.update(online);
-		if (authId != null) {
-			authMng.deleteById(authId);
-			session.logout(request, response);
-		}
+		request.getSession().invalidate();
+//		String authId = (String) session.getAttribute(request, AUTH_KEY);
+//		BbsUser user = CmsUtils.getUser(request);
+//		Calendar calendar = Calendar.getInstance();
+//		BbsUserOnline online = user.getUserOnline();
+//		Date lastKeepSessionTime = (Date) session.getAttribute(request,
+//				LAST_KEEP_SESSION_TIME);
+//		online.updateOnline(DateUtils.diffTwoDate(lastKeepSessionTime, calendar
+//				.getTime()));
+//		userOnlineMng.update(online);
+//		if (authId != null) {
+//			authMng.deleteById(authId);
+//			session.logout(request, response);
+//		}
 		String processUrl = RequestUtils.getQueryParam(request, PROCESS_URL);
 		String returnUrl = RequestUtils.getQueryParam(request, RETURN_URL);
-		String view = getView(processUrl, returnUrl, authId);
+		String view = getView(processUrl, returnUrl, "");
 		if (view != null) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("logout(HttpServletRequest, HttpServletResponse) - end"); //$NON-NLS-1$
@@ -209,6 +252,42 @@ public class CmsLoginAct {
 			return "redirect:login.jspx";
 		}
 	}
+
+//	@RequestMapping(value = "/logout.do")
+//	public String logout(HttpServletRequest request,
+//			HttpServletResponse response) {
+//		if (logger.isDebugEnabled()) {
+//			logger.debug("logout(HttpServletRequest, HttpServletResponse) - start"); //$NON-NLS-1$
+//		}
+//
+//		String authId = (String) session.getAttribute(request, AUTH_KEY);
+//		BbsUser user = CmsUtils.getUser(request);
+//		Calendar calendar = Calendar.getInstance();
+//		BbsUserOnline online = user.getUserOnline();
+//		Date lastKeepSessionTime = (Date) session.getAttribute(request,
+//				LAST_KEEP_SESSION_TIME);
+//		online.updateOnline(DateUtils.diffTwoDate(lastKeepSessionTime, calendar
+//				.getTime()));
+//		userOnlineMng.update(online);
+//		if (authId != null) {
+//			authMng.deleteById(authId);
+//			session.logout(request, response);
+//		}
+//		String processUrl = RequestUtils.getQueryParam(request, PROCESS_URL);
+//		String returnUrl = RequestUtils.getQueryParam(request, RETURN_URL);
+//		String view = getView(processUrl, returnUrl, authId);
+//		if (view != null) {
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("logout(HttpServletRequest, HttpServletResponse) - end"); //$NON-NLS-1$
+//			}
+//			return view;
+//		} else {
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("logout(HttpServletRequest, HttpServletResponse) - end"); //$NON-NLS-1$
+//			}
+//			return "redirect:login.jspx";
+//		}
+//	}
 
 	private WebErrors validateSubmit(String username, String password,
 			String captcha, HttpServletRequest request,
