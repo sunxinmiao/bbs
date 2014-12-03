@@ -1,13 +1,12 @@
 package com.jeecms.bbs.action.front;
 
-import org.apache.log4j.Logger;
-
 import static com.jeecms.bbs.Constants.TPLDIR_MEMBER;
 import static com.jeecms.core.action.front.LoginAct.MESSAGE;
 import static com.jeecms.core.action.front.LoginAct.PROCESS_URL;
 import static com.jeecms.core.action.front.LoginAct.RETURN_URL;
 import static com.jeecms.core.manager.AuthenticationMng.AUTH_KEY;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,13 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.jeecms.core.entity.CmsSite;
 import com.jeecms.bbs.entity.BbsLoginLog;
 import com.jeecms.bbs.entity.BbsUser;
 import com.jeecms.bbs.entity.BbsUserOnline;
@@ -40,6 +39,7 @@ import com.jeecms.common.web.CookieUtils;
 import com.jeecms.common.web.RequestUtils;
 import com.jeecms.common.web.session.SessionProvider;
 import com.jeecms.core.entity.Authentication;
+import com.jeecms.core.entity.CmsSite;
 import com.jeecms.core.manager.AuthenticationMng;
 import com.jeecms.core.web.WebErrors;
 import com.octo.captcha.service.image.ImageCaptchaService;
@@ -60,7 +60,8 @@ public class CasLoginAct {
 	public String login_cookie(HttpServletRequest request,
 			HttpServletResponse response, ModelMap model) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
+			logger
+					.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
 		}
 
 		CmsSite site = CmsUtils.getSite(request);
@@ -70,8 +71,24 @@ public class CasLoginAct {
 			Cookie c_password = CookieUtils.getCookie(request, "bbs_password");
 			String username = c_username.getValue();
 			String password = c_password.getValue();
+
+			//由于cookie不能包含=符号，加密的字符串以=结尾
+			//加密串= (加密串-等于号) + 等于号个数
+			//最后两位用于存放等于号个数
+			int length = Integer.parseInt(username.substring(username.length()-2, username.length()));
+			username = username.substring(0, username.length()-2);
+			for(int i=0;i<length;i++) {
+				username += "=";
+			}
+			length = Integer.parseInt(password.substring(password.length()-2, password.length()));
+			password = password.substring(0, password.length()-2);
+			for(int i=0;i<length;i++) {
+				password += "=";
+			}
 			
-			Authentication auth = authMng.login(EncryptUtil.DESDencrypted(username,EncryptUtil.isEncryptKey), EncryptUtil.DESDencrypted(password,EncryptUtil.isEncryptKey), ip,
+			Authentication auth = authMng.login(EncryptUtil.DESDencrypted(
+					username, EncryptUtil.isEncryptKey), EncryptUtil
+					.DESDencrypted(password, EncryptUtil.isEncryptKey), ip,
 					request, response, session);
 			// 是否需要在这里加上登录次数的更新？按正常的方式，应该在process里面处理的，不过这里处理也没大问题。
 			bbsUserMng.updateLoginInfo(auth.getUid(), ip);
@@ -83,14 +100,16 @@ public class CasLoginAct {
 				throw new DisabledException("user disabled");
 			}
 			Calendar calendar = Calendar.getInstance();
-			session.setAttribute(request, response, LAST_KEEP_SESSION_TIME, calendar.getTime());
+			session.setAttribute(request, response, LAST_KEEP_SESSION_TIME,
+					calendar.getTime());
 			String view = getView(null, site.getUrlWhole(), auth.getId());
 			if (view != null) {
 				session.setAttribute(request, response, "processCookies",
 						"true");
 
 				if (logger.isDebugEnabled()) {
-					logger.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+					logger
+							.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 				}
 				return view;
 			} else {
@@ -99,19 +118,23 @@ public class CasLoginAct {
 						"false");
 
 				if (logger.isDebugEnabled()) {
-					logger.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+					logger
+							.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 				}
 				return "redirect:login.jspx";
 			}
 		} catch (Exception e) {
-			logger.error("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+			logger
+					.error(
+							"login_cookie(HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
 			// TODO: handle exception
 			FrontUtils.frontData(request, model, site);
 			session.setAttribute(request, response, "processCookies", "false");
 			String returnString = getView(null, site.getUrlWhole(), null);
 			if (logger.isDebugEnabled()) {
-				logger.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+				logger
+						.debug("login_cookie(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 			}
 			return returnString;
 		}
@@ -127,13 +150,13 @@ public class CasLoginAct {
 		String sol = site.getSolutionPath();
 		model.addAttribute("site", site);
 		FrontUtils.frontData(request, model, site);
-		String returnString = FrontUtils.getTplPath(request, sol, TPLDIR_MEMBER, LOGIN_INPUT);
+		String returnString = FrontUtils.getTplPath(request, sol,
+				TPLDIR_MEMBER, LOGIN_INPUT);
 		if (logger.isDebugEnabled()) {
 			logger.debug("login(HttpServletRequest, ModelMap) - end"); //$NON-NLS-1$
 		}
 		return returnString;
 	}
-
 
 	@RequestMapping(value = "/login.jspx", method = RequestMethod.POST)
 	public String submit(String username, String password, String captcha,
@@ -141,7 +164,8 @@ public class CasLoginAct {
 			String message, HttpServletRequest request,
 			HttpServletResponse response, ModelMap model) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
+			logger
+					.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
 		}
 
 		CmsSite site = CmsUtils.getSite(request);
@@ -183,7 +207,8 @@ public class CasLoginAct {
 					online.initial();
 					userOnlineMng.save(online);
 				}
-				session.setAttribute(request, response, LAST_KEEP_SESSION_TIME, calendar.getTime());
+				session.setAttribute(request, response, LAST_KEEP_SESSION_TIME,
+						calendar.getTime());
 				String view = getView(processUrl, returnUrl, auth.getId());
 				if (view != null) {
 					// 4 不保存
@@ -202,13 +227,36 @@ public class CasLoginAct {
 					} else if ("3".equals(cookieType)) {
 						maxDate = 1 * 24 * 60 * 60;
 					}
+					
+					//对用户名密码加密
+					String encryptUserName = EncryptUtil.DESEncrypt(username,
+							EncryptUtil.isEncryptKey);
+					String encryptPassword = EncryptUtil.DESEncrypt(password,
+							EncryptUtil.isEncryptKey);
+					
+					//由于cookie不能包含=符号，加密的字符串以=结尾
+					//加密串= (加密串-等于号) + 等于号个数
+					//最后两位用于存放等于号个数
+					int length = encryptUserName.length()
+							- encryptUserName.indexOf("=");
+					encryptUserName = (encryptUserName.substring(0,
+							encryptUserName.length() - length))
+							+ numberFormat(length);
+					
+					length = encryptPassword.length()
+							- encryptPassword.indexOf("=");
+					encryptPassword = (encryptPassword.substring(0,
+							encryptPassword.length() - length))
+							+ numberFormat(length);
+
 					CookieUtils.addCookie(request, response, "bbs_username",
-							EncryptUtil.DESEncrypt(username,EncryptUtil.isEncryptKey), maxDate);
+							encryptUserName, maxDate);
 					CookieUtils.addCookie(request, response, "bbs_password",
-							EncryptUtil.DESEncrypt(password,EncryptUtil.isEncryptKey), maxDate);
+							encryptPassword, maxDate);
 
 					if (logger.isDebugEnabled()) {
-						logger.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+						logger
+								.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 					}
 					return view;
 
@@ -216,20 +264,27 @@ public class CasLoginAct {
 					FrontUtils.frontData(request, model, site);
 
 					if (logger.isDebugEnabled()) {
-						logger.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+						logger
+								.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 					}
 					return "redirect:login.jspx";
 				}
 			} catch (UsernameNotFoundException e) {
-				logger.error("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+				logger
+						.error(
+								"submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
 				errors.addErrorString(e.getMessage());
 			} catch (BadCredentialsException e) {
-				logger.error("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+				logger
+						.error(
+								"submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
 				errors.addErrorString(e.getMessage());
 			} catch (DisabledException e) {
-				logger.error("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
+				logger
+						.error(
+								"submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
 				errors.addErrorString(e.getMessage());
 			}
@@ -245,9 +300,11 @@ public class CasLoginAct {
 		if (!StringUtils.isBlank(message)) {
 			model.addAttribute(MESSAGE, message);
 		}
-		String returnString = FrontUtils.getTplPath(request, sol, TPLDIR_MEMBER, LOGIN_INPUT);
+		String returnString = FrontUtils.getTplPath(request, sol,
+				TPLDIR_MEMBER, LOGIN_INPUT);
 		if (logger.isDebugEnabled()) {
-			logger.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+			logger
+					.debug("submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 		}
 		return returnString;
 	}
@@ -256,7 +313,8 @@ public class CasLoginAct {
 	public String logout(HttpServletRequest request,
 			HttpServletResponse response, ModelMap model) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("logout(HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
+			logger
+					.debug("logout(HttpServletRequest, HttpServletResponse, ModelMap) - start"); //$NON-NLS-1$
 		}
 
 		String authId = (String) session.getAttribute(request, AUTH_KEY);
@@ -291,12 +349,14 @@ public class CasLoginAct {
 					Integer.MAX_VALUE);
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("logout(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+				logger
+						.debug("logout(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 			}
 			return view;
 		} else {
 			if (logger.isDebugEnabled()) {
-				logger.debug("logout(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
+				logger
+						.debug("logout(HttpServletRequest, HttpServletResponse, ModelMap) - end"); //$NON-NLS-1$
 			}
 			return "redirect:login.jspx";
 		}
@@ -306,7 +366,8 @@ public class CasLoginAct {
 			HttpServletRequest request, String captcha,
 			HttpServletResponse response) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - start"); //$NON-NLS-1$
+			logger
+					.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - start"); //$NON-NLS-1$
 		}
 
 		WebErrors errors = WebErrors.create(request);
@@ -315,26 +376,30 @@ public class CasLoginAct {
 			errors.addErrorCode("error.invalidCaptcha");
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
+				logger
+						.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
 			}
 			return errors;
 		}
 
 		if (errors.ifOutOfLength(username, "username", 1, 32)) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
+				logger
+						.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
 			}
 			return errors;
 		}
 		if (errors.ifOutOfLength(password, "password", 1, 32)) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
+				logger
+						.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
 			}
 			return errors;
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
+			logger
+					.debug("validateSubmit(String, String, HttpServletRequest, String, HttpServletResponse) - end"); //$NON-NLS-1$
 		}
 		return errors;
 	}
@@ -381,6 +446,25 @@ public class CasLoginAct {
 		}
 	}
 
+	/**
+	 * 数字转格式化为2位字符串
+	 * 
+	 * @param number
+	 * @return
+	 */
+	private String numberFormat(int number) {
+		// 得到一个NumberFormat的实例
+		NumberFormat nf = NumberFormat.getInstance();
+		// 设置是否使用分组
+		nf.setGroupingUsed(false);
+		// 设置最大整数位数
+		nf.setMaximumIntegerDigits(2);
+		// 设置最小整数位数
+		nf.setMinimumIntegerDigits(2);
+		// 输出测试语句
+		return nf.format(number);
+	}
+
 	@Autowired
 	private BbsUserMng bbsUserMng;
 	@Autowired
@@ -393,4 +477,5 @@ public class CasLoginAct {
 	private BbsLoginLogMng bbsLoginMng;
 	@Autowired
 	private BbsUserOnlineMng userOnlineMng;
+
 }
