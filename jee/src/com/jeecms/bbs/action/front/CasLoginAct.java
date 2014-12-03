@@ -71,7 +71,7 @@ public class CasLoginAct {
 			String username = c_username.getValue();
 			String password = c_password.getValue();
 			
-			Authentication auth = authMng.login(username, EncryptUtil.DESDencrypted(password,EncryptUtil.isEncryptKey), ip,
+			Authentication auth = authMng.login(EncryptUtil.DESDencrypted(username,EncryptUtil.isEncryptKey), EncryptUtil.DESDencrypted(password,EncryptUtil.isEncryptKey), ip,
 					request, response, session);
 			// 是否需要在这里加上登录次数的更新？按正常的方式，应该在process里面处理的，不过这里处理也没大问题。
 			bbsUserMng.updateLoginInfo(auth.getUid(), ip);
@@ -203,7 +203,7 @@ public class CasLoginAct {
 						maxDate = 1 * 24 * 60 * 60;
 					}
 					CookieUtils.addCookie(request, response, "bbs_username",
-							username, maxDate);
+							EncryptUtil.DESEncrypt(username,EncryptUtil.isEncryptKey), maxDate);
 					CookieUtils.addCookie(request, response, "bbs_password",
 							EncryptUtil.DESEncrypt(password,EncryptUtil.isEncryptKey), maxDate);
 

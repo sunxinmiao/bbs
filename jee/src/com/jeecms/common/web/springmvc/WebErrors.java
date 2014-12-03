@@ -458,6 +458,27 @@ public abstract class WebErrors {
 			return false;
 		}
 	}
+	
+	public boolean ifIllegalEmail(String email) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("ifLegalEmail(String) - start"); //$NON-NLS-1$
+		}
+
+		Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$");
+		Matcher matcher = pattern.matcher(email);
+		if (!matcher.matches()) {
+			addErrorCode("error.email", email);
+			if (logger.isDebugEnabled()) {
+				logger.debug("ifLegalEmail(String) - end"); //$NON-NLS-1$
+			}
+			return true;
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("ifLegalEmail(String) - end"); //$NON-NLS-1$
+		}
+		return false;
+	}
 
 	public void noPermission(Class<?> clazz, Serializable id) {
 		if (logger.isDebugEnabled()) {

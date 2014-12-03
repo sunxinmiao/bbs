@@ -325,6 +325,14 @@ public class RegisterAct {
 			}
 			return errors;
 		}
+		//校验信箱合法性
+		if(errors.ifIllegalEmail(email)) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("validateSubmit(String, String, String, String, CmsSite, HttpServletRequest, HttpServletResponse) - end"); //$NON-NLS-1$
+			}
+			return errors;
+		}
+		
 		// 用户名存在，返回false。
 		if (unifiedUserMng.usernameExist(username)) {
 			errors.addErrorCode("error.usernameExist");
