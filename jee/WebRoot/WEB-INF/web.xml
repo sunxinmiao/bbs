@@ -111,6 +111,19 @@
 		<servlet-name>Jcaptcha</servlet-name>
 		<servlet-class>com.jeecms.common.captcha.JcaptchaServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>mainServlet</servlet-name>
+		<servlet-class>com.jeecms.bbs.main.MainServlet</servlet-class>
+		<init-param>
+			<param-name>specialAccount</param-name>
+			<param-value>
+				WEB-INF/config/specialAccount/specialAccountConfig.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>Jcaptcha</servlet-name>
 		<url-pattern>/captcha.svl</url-pattern>

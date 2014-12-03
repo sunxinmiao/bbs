@@ -38,13 +38,13 @@ public class SpecialAccountConfig {
 		return returnString;
 	}
 	
-	private static void init(String path) {
+	public static void init(String path) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("init(String) - start"); //$NON-NLS-1$
 		}
-		specialAccountMap = new HashMap<String,String>();
 		File file = new File(path);
 		if(file.exists()){
+			specialAccountMap = new HashMap<String,String>();
 			IXMLDoc doc = XMLParserFactory.getXMLDoc(new File(path));
 			parseFile(doc);
 		}else{
