@@ -274,19 +274,19 @@ public class CasLoginAct {
 						.error(
 								"submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
-				errors.addErrorString(e.getMessage());
+				errors.addErrorString("用户不存在");
 			} catch (BadCredentialsException e) {
 				logger
 						.error(
 								"submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
-				errors.addErrorString(e.getMessage());
+				errors.addErrorString("密码错误");
 			} catch (DisabledException e) {
 				logger
 						.error(
 								"submit(String, String, String, String, String, String, String, HttpServletRequest, HttpServletResponse, ModelMap)", e); //$NON-NLS-1$
 
-				errors.addErrorString(e.getMessage());
+				errors.addErrorString("用户被禁用");
 			}
 		}
 		errors.toModel(model);

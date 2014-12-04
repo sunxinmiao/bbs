@@ -117,13 +117,13 @@ public class RegisterAct {
 				model.addAttribute("status", 5);
 			} else {
 				try {
-					user = bbsUserMng.registerMember(username, email, password, ip,
-							groupId, userExt, false, sender, msgTpl);
 					//信箱校验
 					Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$");
 					Matcher matcher = pattern.matcher(user.getEmail());
 					
-					if(matcher.matches() && user.getEmail().length()<=100){
+					if(matcher.matches() && user.getEmail().length()<=100 && !unifiedUserMng.emailExist(email)){
+						user = bbsUserMng.registerMember(username, email, password, ip,
+								groupId, userExt, false, sender, msgTpl);
 						bbsConfigEhCache.setBbsConfigCache(0, 0, 0, 1, user, site.getId());
 						model.addAttribute("status", 0);
 					}
@@ -153,13 +153,14 @@ public class RegisterAct {
 				return returnString;
 			}
 		}else{ 
-			user = bbsUserMng.registerMember(username, email, password,
-			  ip, groupId, userExt);
+			
 			//信箱校验
 			Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$");
 			Matcher matcher = pattern.matcher(user.getEmail());
 			
-			if(matcher.matches() && user.getEmail().length()<=100){
+			if(matcher.matches() && user.getEmail().length()<=100 && !unifiedUserMng.emailExist(email)){
+				user = bbsUserMng.registerMember(username, email, password,
+						  ip, groupId, userExt);
 				bbsConfigEhCache.setBbsConfigCache(0, 0, 0, 1, user, site.getId());
 				logger.info("member register success. username="+ username );
 				FrontUtils.frontData(request, model, site);

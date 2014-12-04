@@ -15,7 +15,9 @@
 	<bean id="friendlinkAct" class="com.jeecms.bbs.action.front.FriendlinkAct"/>
 	<bean id="forgotPasswordAct" class="com.jeecms.bbs.action.member.ForgotPasswordAct"/>
 	<bean id="bbsKeepSession" class="com.jeecms.bbs.action.front.BbsKeepSession"/>
+	<!--道具action,不开启 
 	<bean id="bbsMagicAct" class="com.jeecms.bbs.action.front.BbsMagicAct"/>
+	 -->
 	<bean id="friendAct" class="com.jeecms.bbs.action.member.FriendAct"></bean>
 	<bean id="messageAct" class="com.jeecms.bbs.action.member.MessageAct"></bean>
 	<bean id="imageUploadAct" class="com.jeecms.bbs.action.member.ImageUploadAct"></bean>
