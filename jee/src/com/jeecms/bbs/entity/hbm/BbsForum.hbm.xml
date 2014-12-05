@@ -117,6 +117,27 @@
 			length="10"
 			/>
 		<property
+			name="moneyTopic"
+			column="MONEY_TOPIC"
+			type="integer"
+			not-null="true"
+			length="10"
+			/>
+		<property
+			name="moneyReply"
+			column="MONEY_REPLY"
+			type="integer"
+			not-null="true"
+			length="10"
+			/>
+		<property
+			name="moneyPrime"
+			column="MONEY_PRIME"
+			type="integer"
+			not-null="true"
+			length="10"
+			/>
+		<property
 			name="prestigeTopic"
 			column="PRESTIGE_TOPIC"
 			type="integer"

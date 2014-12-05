@@ -67,7 +67,10 @@ public abstract class BaseBbsForum implements Serializable {
 			java.lang.Integer priority, java.lang.Integer topicTotal,
 			java.lang.Integer postTotal, java.lang.Integer postToday,
 			java.lang.Integer pointTopic, java.lang.Integer pointReply,
-			java.lang.Integer pointPrime) {
+			java.lang.Integer pointPrime,
+			java.lang.Integer moneyTopic,
+			java.lang.Integer moneyReply,
+			java.lang.Integer moneyPrime) {
 
 		this.setId(id);
 		this.setCategory(category);
@@ -82,6 +85,9 @@ public abstract class BaseBbsForum implements Serializable {
 		this.setPointTopic(pointTopic);
 		this.setPointReply(pointReply);
 		this.setPointPrime(pointPrime);
+		this.setMoneyTopic(moneyTopic);
+		this.setMoneyReply(moneyReply);
+		this.setMoneyPrime(moneyPrime);
 		initialize();
 	}
 
@@ -121,6 +127,19 @@ public abstract class BaseBbsForum implements Serializable {
 	private java.lang.String groupViews;
 	private java.lang.String groupTopics;
 	private java.lang.String groupReplies;
+	//金币规则
+	/**
+	 * 发帖金币
+	 */
+	private Integer moneyTopic;
+	/**
+	 * 回复金币
+	 */
+	private Integer moneyReply;
+	/**
+	 * 加精华金币
+	 */
+	private Integer moneyPrime;
 
 	// many to one
 	private com.jeecms.bbs.entity.BbsPost lastPost;
@@ -652,6 +671,30 @@ public abstract class BaseBbsForum implements Serializable {
 
 	public String toString() {
 		return super.toString();
+	}
+
+	public Integer getMoneyTopic() {
+		return moneyTopic;
+	}
+
+	public void setMoneyTopic(Integer moneyTopic) {
+		this.moneyTopic = moneyTopic;
+	}
+
+	public Integer getMoneyReply() {
+		return moneyReply;
+	}
+
+	public void setMoneyReply(Integer moneyReply) {
+		this.moneyReply = moneyReply;
+	}
+
+	public Integer getMoneyPrime() {
+		return moneyPrime;
+	}
+
+	public void setMoneyPrime(Integer moneyPrime) {
+		this.moneyPrime = moneyPrime;
 	}
 
 }

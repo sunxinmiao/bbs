@@ -28,6 +28,11 @@ import com.jeecms.common.page.Pagination;
 import com.jeecms.common.web.CookieUtils;
 import com.jeecms.core.entity.CmsSite;
 
+/**
+ * 后台管理，版块action
+ * @author Administrator
+ *
+ */
 @Controller
 public class BbsForumAct {
 	private static final Logger logger = Logger.getLogger(BbsForumAct.class);

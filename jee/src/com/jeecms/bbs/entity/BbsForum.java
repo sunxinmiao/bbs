@@ -156,11 +156,14 @@ public class BbsForum extends BaseBbsForum {
 			java.lang.Integer priority, java.lang.Integer topicTotal,
 			java.lang.Integer postTotal, java.lang.Integer postToday,
 			java.lang.Integer pointTopic, java.lang.Integer pointReply,
-			java.lang.Integer pointPrime) {
+			java.lang.Integer pointPrime,
+			java.lang.Integer moneyTopic,
+			java.lang.Integer moneyReply,
+			java.lang.Integer moneyPrime) {
 
 		super(id, category, site, path, title, topicLockLimit, priority,
 				topicTotal, postTotal, postToday, pointTopic, pointReply,
-				pointPrime);
+				pointPrime,moneyTopic,moneyReply,moneyPrime);
 	}
 
 	/* [CONSTRUCTOR MARKER END] */
