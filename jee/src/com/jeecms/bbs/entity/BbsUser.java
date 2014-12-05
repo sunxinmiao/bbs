@@ -717,6 +717,9 @@ public class BbsUser extends BaseBbsUser implements PriorityInterface {
 			setPostToday(0);
 		}
 
+		if(null == getMoney()) {
+			setMoney(0L);
+		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("init() - end"); //$NON-NLS-1$
 		}
@@ -796,12 +799,13 @@ public class BbsUser extends BaseBbsUser implements PriorityInterface {
 			java.lang.Boolean disabled, java.lang.Long point,
 			java.lang.Short avatarType, java.lang.Integer topicCount,
 			java.lang.Integer replyCount, java.lang.Integer primeCount,
-			java.lang.Integer postToday, java.lang.Short prohibitPost) {
+			java.lang.Integer postToday, java.lang.Short prohibitPost,
+			java.lang.Long money) {
 
 		super(id, group, username, registerTime, registerIp, loginCount,
 				uploadTotal, uploadToday, uploadSize, admin, disabled, point,
 				avatarType, topicCount, replyCount, primeCount, postToday,
-				prohibitPost);
+				prohibitPost,money);
 	}
 
 	/* [CONSTRUCTOR MARKER END] */

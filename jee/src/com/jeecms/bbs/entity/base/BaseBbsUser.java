@@ -73,7 +73,8 @@ public abstract class BaseBbsUser implements Serializable {
 			java.lang.Boolean disabled, java.lang.Long point,
 			java.lang.Short avatarType, java.lang.Integer topicCount,
 			java.lang.Integer replyCount, java.lang.Integer primeCount,
-			java.lang.Integer postToday, java.lang.Short prohibitPost) {
+			java.lang.Integer postToday, java.lang.Short prohibitPost,
+			java.lang.Long money) {
 
 		this.setId(id);
 		this.setGroup(group);
@@ -93,6 +94,7 @@ public abstract class BaseBbsUser implements Serializable {
 		this.setPrimeCount(primeCount);
 		this.setPostToday(postToday);
 		this.setProhibitPost(prohibitPost);
+		this.setMoney(money);
 		initialize();
 	}
 
@@ -119,6 +121,10 @@ public abstract class BaseBbsUser implements Serializable {
 	private java.lang.Boolean admin;
 	private java.lang.Boolean disabled;
 	private java.lang.Long point;
+	/**
+	 * 金钱数
+	 */
+	private java.lang.Long money;
 	private java.lang.Long prestige;
 	private java.lang.String introduction;
 	private java.lang.String signed;
@@ -725,6 +731,14 @@ public abstract class BaseBbsUser implements Serializable {
 
 	public String toString() {
 		return super.toString();
+	}
+
+	public java.lang.Long getMoney() {
+		return money;
+	}
+
+	public void setMoney(java.lang.Long money) {
+		this.money = money;
 	}
 
 }

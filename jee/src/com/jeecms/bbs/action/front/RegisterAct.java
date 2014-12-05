@@ -119,9 +119,9 @@ public class RegisterAct {
 				try {
 					//信箱校验
 					Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$");
-					Matcher matcher = pattern.matcher(user.getEmail());
+					Matcher matcher = pattern.matcher(email);
 					
-					if(matcher.matches() && user.getEmail().length()<=100 && !unifiedUserMng.emailExist(email)){
+					if(matcher.matches() && email.length()<=100 && !unifiedUserMng.emailExist(email)){
 						user = bbsUserMng.registerMember(username, email, password, ip,
 								groupId, userExt, false, sender, msgTpl);
 						bbsConfigEhCache.setBbsConfigCache(0, 0, 0, 1, user, site.getId());
@@ -156,9 +156,9 @@ public class RegisterAct {
 			
 			//信箱校验
 			Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$");
-			Matcher matcher = pattern.matcher(user.getEmail());
+			Matcher matcher = pattern.matcher(email);
 			
-			if(matcher.matches() && user.getEmail().length()<=100 && !unifiedUserMng.emailExist(email)){
+			if(matcher.matches() && email.length()<=100 && !unifiedUserMng.emailExist(email)){
 				user = bbsUserMng.registerMember(username, email, password,
 						  ip, groupId, userExt);
 				bbsConfigEhCache.setBbsConfigCache(0, 0, 0, 1, user, site.getId());
