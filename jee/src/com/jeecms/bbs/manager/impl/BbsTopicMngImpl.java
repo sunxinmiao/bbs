@@ -188,24 +188,27 @@ public class BbsTopicMngImpl implements BbsTopicMng {
 		BbsForum topicForum;
 		for (Integer id : ids) {
 			topic = dao.findById(id);
-			topic.setPrimeLevel(primeLevel);
-			toUser=topic.getCreater();
-			topicForum=topic.getForum();
-			if(primeLevel==1){
-				toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime1());
-				toUser.setPrimeCount(toUser.getPrimeCount()+1);
-			}else if(primeLevel==2){
-				toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime2());
-				toUser.setPrimeCount(toUser.getPrimeCount()+1);
-			}else if(primeLevel==3){
-				toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime3());
-				toUser.setPrimeCount(toUser.getPrimeCount()+1);
-			}else if(primeLevel==0){
-				toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime0());
-				toUser.setPrimeCount(toUser.getPrimeCount()-1);
+			
+			if(primeLevel!= topic.getPrimeLevel()) {
+				topic.setPrimeLevel(primeLevel);
+				toUser=topic.getCreater();
+				topicForum=topic.getForum();
+				if(primeLevel==1){
+					toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime1());
+					toUser.setPrimeCount(toUser.getPrimeCount()+1);
+				}else if(primeLevel==2){
+					toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime2());
+					toUser.setPrimeCount(toUser.getPrimeCount()+1);
+				}else if(primeLevel==3){
+					toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime3());
+					toUser.setPrimeCount(toUser.getPrimeCount()+1);
+				}else if(primeLevel==0){
+					toUser.setPrestige(toUser.getPrestige()+topicForum.getPrestigePrime0());
+					toUser.setPrimeCount(toUser.getPrimeCount()-1);
+				}
+				bbsOperationMng.saveOpt(topic.getSite(), operator, "精华", reason,
+						topic);
 			}
-			bbsOperationMng.saveOpt(topic.getSite(), operator, "精华", reason,
-					topic);
 		}
 
 		if (logger.isDebugEnabled()) {
@@ -589,6 +592,8 @@ public class BbsTopicMngImpl implements BbsTopicMng {
 		if(forum.getPrestigeAvailable()){
 			user.setPrestige(user.getPrestige()+forum.getPrestigeTopic());
 		}
+		//设置金钱
+		user.setMoney(user.getMoney() + forum.getMoneyTopic());
 		user.setTopicCount(user.getTopicCount() + 1);
 		user.setPostToday(user.getPostToday() + 1);
 

@@ -559,6 +559,10 @@ public class BbsPostMngImpl implements BbsPostMng {
 		if(forum.getPrestigeAvailable()){
 			user.setPrestige(user.getPrestige()+forum.getPrestigeReply());
 		}
+		
+		//存入金钱
+		user.setMoney(user.getMoney() + forum.getMoneyReply());
+		
 		user.setPostToday(user.getPostToday() + 1);
 		user.setReplyCount(user.getReplyCount() + 1);
 

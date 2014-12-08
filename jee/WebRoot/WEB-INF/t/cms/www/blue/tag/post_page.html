@@ -118,35 +118,23 @@ function VoteResult(){
             </tbody>
           </table>
           </div>
-          [#if magic_switch]
-          <div id="user-magic-${post.id}" style="display: none;">
-	          <ul onmousemove="showUserMagicUL('${post.id}')"> 
-	          [#if magicUserList??]
-	          	[#list magicUserList as magic]
-	          		[#if magic.identifier=="showip"]
-	          			<li><a href="#" id="magica_${post.id}_${post.id}_showip_${creater.username!}"  title="使用道具" class='thickbox'">${magic.name!}</a></li>
-	          		[#elseif magic.identifier=="checkonline"]
-	          			[#if user??]
-		          		[#if post.creater.id!=user.id]<li><a href="#" id="magica_${topic.id}_${post.id}_checkonline_${creater.username!}"  title="使用道具" class='thickbox'">${magic.name!}</a></li>[/#if]
-		          		[#else]
-		          			<li><a href="#" id="magica_${topic.id}_${post.id}_checkonline_${creater.username!}" title="使用道具" class='thickbox'">${magic.name!}</a></li>
-		          		[/#if]
-	          		[/#if]
-	          	[/#list]
-	          [/#if]
-	          </ul>
-          </div>
-          [/#if]
-          <div style="padding-left: 12px; padding-bottom: 8px">级别: ${creater.group.name}<br />
+         
+          <div style="padding-left: 12px; padding-bottom: 8px">${creater.group.name}<br />
           <img alt="" style="display: block; margin: 0.2em 0pt" src="/${res}/bbs_forum/img/level/${creater.group.imgPath}.gif" /> <span class="user-info2" id="showface_0"><span class="user-infoWrap2">
           <div class="c" style="width: 120px; height: 5px"></div>
-             UID: <span class="f12">${creater.id}</span>  <a id="msgSendA_${post.id}_${creater.username!}" href="${base}/member/getsendmsgpage.jhtml?username=${creater.username!}">打招呼</a><br />
-            积分:${creater.point!}   <a id="u${creater.id}_${post.id}" href="javascript:apply('${creater.id}','${creater.username}','${post.id}')">加为好友</a> <br />
-         威望: ${creater.prestige!}           精华: ${creater.primeCount!} <br />
-          主题:<span class="s1 f12">${creater.topicCount!}</span>
-          回复:<span class="s2 f12">${creater.replyCount!}</span><br />
-          注册时间:<span class="gray">${creater.registerTime?string('yyyy-MM-dd')}</span><br />
-           在线时长:<span class="gray">${creater.onlineYear!}</span><br />
+            <a id="msgSendA_${post.id}_${creater.username!}" href="${base}/member/getsendmsgpage.jhtml?username=${creater.username!}"><span class="s1 f12">打招呼</span>&nbsp;&nbsp</a>
+             <a id="u${creater.id}_${post.id}" href="javascript:apply('${creater.id}','${creater.username}','${post.id}')"><span class="s1 f12">加为好友</span></a>
+            <br />
+             <!-- <span class="s3 f12"> -->
+            主题:${creater.topicCount!} <br />
+            回复:${creater.replyCount!}<br />
+           精华: ${creater.primeCount!} <br />
+            积分:${creater.point!}   <br />
+           威望: ${creater.prestige!}        <br />    
+          现金:${creater.money!}<br />
+          <!-- <span class="gray"> -->
+          注册时间:${creater.registerTime?string('yyyy-MM-dd')}<br />
+           在线时长:${creater.onlineYear!}<br />
 
           </span></span></div>
           [/#if]
@@ -218,65 +206,7 @@ function VoteResult(){
           </div>
           <div class="tipad black">
           <span class="fr gray">
-         [#if magic_switch]
-          	[#if post_index==0]
-          	<div id="magicUL${post.id}" onmouseout="hideMagicUL('${post.id}')" style="display: none;">
-          	<ul onmousemove="showMagicUL('${post.id}')"> 
-          		[#if magicTopicList??]
-          		[#list magicTopicList as magic]
-          			[#if magic.identifier=="anonymouspost"]
-          				[#if user??]
-			          		[#if topic.creater.id==user.id]<li><a href="#" id="magica_${post.id}_${post.id}_anonymouspost"  title="使用道具" class='thickbox'">${magic.name!}</a></li>[/#if]
-			         	[/#if]
-          			[#elseif magic.identifier=="repent"]
-          				[#if user??]
-			          		[#if topic.creater.id==user.id]<li><a href="#" id="magica_${topic.id}_${post.id}_repent"  title="使用道具" class='thickbox'">${magic.name!}</a></li>[/#if]
-		          		[/#if]
-          			[#elseif magic.identifier=="namepost"]
-          				<li><a href="#" id="magica_${post.id}_${post.id}_namepost"  title="使用道具" class='thickbox'">${magic.name!}</a></li>
-          			[#else]
-          				<li><a href="#" id="magica_${topic.id}_${post.id}_${magic.identifier!}"  title="使用道具" class='thickbox'">${magic.name!}</a></li>
-          			[/#if]
-          		[/#list]
-          		[/#if]
-          	</ul>
-          	</div>
-	          	[#if magicTopicList??]
-	          	[#if magicTopicList?size>0]
-	          		<a href="#"  onmouseover="showMagicUL('${post.id}')">使用道具</a><br/>
-	          	[/#if]
-	          	[/#if]
-          	[#else]
-          	<div id="magicUL${post.id}" onmouseout="hideMagicUL('${post.id}')" style="display: none;">
-          	<ul onmousemove="showMagicUL('${post.id}')"> 
-          	[#if magicPostList??]
-          		[#list magicPostList as magic]
-          			[#if magic.identifier=="namepost"]
-          				<li><a href="#" id="magica_${post.id}_${post.id}_namepost"  title="使用道具" class='thickbox'">${magic.name!}</a></li>
-          			[#elseif magic.identifier=="anonymouspost"]
-          				[#if user??]
-		          		[#if post.creater.id==user.id]
-		          			<li><a href="#" id="magica_${post.id}_${post.id}_anonymouspost"  title="使用道具" class='thickbox'">${magic.name!}</a></li>
-		          		[/#if]
-		          		[/#if]
-          			[#else]
-          				[#if user??]
-		          		[#if post.creater.id==user.id]
-          					<li><a href="#" id="magica_${topic.id}_${post.id}_${magic.identifier!}"  title="使用道具" class='thickbox'">${magic.name!}</a></li>
-          				[/#if]
-          				[/#if]
-          			[/#if]
-          		[/#list]
-          		[/#if]
-          	</ul>
-          	</div>
-	          	[#if magicPostList??]
-	          	[#if magicPostList?size>0]
-	          	<a href="#"  onmouseover="showMagicUL('${post.id}')">使用道具</a><br/>
-	          	[/#if]
-	          	[/#if]
-          	[/#if]
-          	[/#if]
+        
           <a href="${base}/member/getreportpage.jspx?url=${post.url!}" id="reportA_${post.url}_${post.id}">举报</a>
           	&nbsp;&nbsp; <a href="javascript:scroll(0,0)">顶端</a> </span>
           <div class="fl readbot">
@@ -306,15 +236,7 @@ function VoteResult(){
 <script type="text/javascript"> 
 var id;
 var strs=new Array();
-$("a[id^='magica']").each(function(){
-	id=$(this).attr("id");
-	strs=id.split("_");
-	if(strs.length>=5){
-		$(this).wBox({title: "使用道具",requestType:"iframe",iframeWH:{width:400,height:200},target:"${base}/magic/getmagicpage.jspx?pid="+strs[1]+"&ppid="+strs[2]+"&mid="+strs[3]+"&username="+strs[4]});
-		}else{
-			$(this).wBox({title: "使用道具",requestType:"iframe",iframeWH:{width:400,height:200},target:"${base}/magic/getmagicpage.jspx?pid="+strs[1]+"&ppid="+strs[2]+"&mid="+strs[3]});
-			}
-	});
+$
 $("a[id^='msgSendA']").each(function(){
 	id=$(this).attr("id");
 	strs=id.split("_");

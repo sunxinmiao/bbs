@@ -72,10 +72,11 @@ function selectTypes(forumId){
 <ul id="browser" class="filetree"></ul>
 </@p.td>
 <@p.tr/>
-
+<!-- 
 <@p.td colspan="2" label="道具包容量">
 <@p.text colspan="2"  name="magicPacketSize" value=bbsUserGroup.magicPacketSize size="50" maxlength="10" class="required digits" help="本组用户带有道具的最大重量"/>
 </@p.td>
+ -->
 <@p.tr/>
 <#if bbsUserGroup.type==2>
 <@p.radio colspan="1" width="50" label="超级管理权限" name="perms['super_moderator']" value=bbsUserGroup.perms['super_moderator'] list={"true":"是","false":"否"} help="无须成为版主即可管理"/>
